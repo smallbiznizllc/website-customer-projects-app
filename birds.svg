@@ -1,0 +1,80 @@
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  
+  <!-- Bird 1 -->
+  <g id="bird1" transform="translate(240, 120)">
+    <!-- Body -->
+    <ellipse cx="0" cy="0" rx="3" ry="2" fill="black"/>
+    <!-- Left wing -->
+    <path d="M 0 0 Q -8 -5 -15 -3" fill="none" stroke="black" stroke-width="1.5" stroke-linecap="round">
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        values="0 0 0; -45 0 0; 0 0 0; 20 0 0; 0 0 0; 0 0 0; 0 0 0"
+        keyTimes="0; 0.2; 0.35; 0.5; 0.65; 0.8; 1"
+        dur="3s"
+        repeatCount="indefinite"/>
+    </path>
+    <!-- Right wing -->
+    <path d="M 0 0 Q 8 -5 15 -3" fill="none" stroke="black" stroke-width="1.5" stroke-linecap="round">
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        values="0 0 0; 45 0 0; 0 0 0; -20 0 0; 0 0 0; 0 0 0; 0 0 0"
+        keyTimes="0; 0.2; 0.35; 0.5; 0.65; 0.8; 1"
+        dur="3s"
+        repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Bird 2 -->
+  <g id="bird2" transform="translate(350, 70)">
+    <!-- Body -->
+    <ellipse cx="0" cy="0" rx="3" ry="2" fill="black"/>
+    <!-- Left wing -->
+    <path d="M 0 0 Q -8 -5 -15 -3" fill="none" stroke="black" stroke-width="1.5" stroke-linecap="round">
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        values="0 0 0; 20 0 0; 0 0 0; -45 0 0; 0 0 0; 0 0 0; 0 0 0"
+        keyTimes="0; 0.2; 0.35; 0.5; 0.65; 0.8; 1"
+        dur="2.8s"
+        repeatCount="indefinite"/>
+    </path>
+    <!-- Right wing -->
+    <path d="M 0 0 Q 8 -5 15 -3" fill="none" stroke="black" stroke-width="1.5" stroke-linecap="round">
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        values="0 0 0; -20 0 0; 0 0 0; 45 0 0; 0 0 0; 0 0 0; 0 0 0"
+        keyTimes="0; 0.2; 0.35; 0.5; 0.65; 0.8; 1"
+        dur="2.8s"
+        repeatCount="indefinite"/>
+    </path>
+  </g>
+  
+  <!-- Bird 3 -->
+  <g id="bird3" transform="translate(550, 190)">
+    <!-- Body -->
+    <ellipse cx="0" cy="0" rx="3" ry="2" fill="black"/>
+    <!-- Left wing -->
+    <path d="M 0 0 Q -8 -5 -15 -3" fill="none" stroke="black" stroke-width="1.5" stroke-linecap="round">
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        values="0 0 0; -45 0 0; 0 0 0; 20 0 0; 0 0 0; 0 0 0; 0 0 0"
+        keyTimes="0; 0.2; 0.35; 0.5; 0.65; 0.8; 1"
+        dur="3.2s"
+        repeatCount="indefinite"/>
+    </path>
+    <!-- Right wing -->
+    <path d="M 0 0 Q 8 -5 15 -3" fill="none" stroke="black" stroke-width="1.5" stroke-linecap="round">
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        values="0 0 0; 45 0 0; 0 0 0; -20 0 0; 0 0 0; 0 0 0; 0 0 0"
+        keyTimes="0; 0.2; 0.35; 0.5; 0.65; 0.8; 1"
+        dur="3.2s"
+        repeatCount="indefinite"/>
+    </path>
+  </g>
+</svg>

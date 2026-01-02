@@ -1,0 +1,55 @@
+COLORS USED IN creative-landing.html
+=====================================
+
+PRIMARY COLORS:
+---------------
+#4F46E5 - Indigo Blue (Logo, nav links hover, primary accent)
+#667eea - Light Purple/Blue (Hero gradient start, buttons, pricing)
+#764ba2 - Purple (Hero gradient end)
+
+GREEN COLORS (Services Section):
+--------------------------------
+#4CAF50 - Material Green (Service icons, green overlays)
+rgba(76, 175, 80, 0.9) - Green overlay (90% opacity)
+rgba(76, 175, 80, 0.85) - Green overlay (85% opacity)
+#4CAF50 - Green (Service icon backgrounds)
+
+DARK COLORS:
+------------
+#333 - Dark Gray (Body text, nav links, borders)
+#1a1a1a - Almost Black (Section titles, dark text)
+rgba(33, 33, 33, 0.9) - Dark Gray overlay (90% opacity)
+#1a1a1a - Dark (Footer background)
+
+LIGHT COLORS:
+-------------
+#f8f9fa - Light Gray (Services section background, testimonials background, team background)
+#f5f5f5 - Very Light Gray (Office scene background)
+#e5e7eb - Light Border Gray (Pricing card borders)
+#f0f0f0 - Light Border (Pricing features border)
+white - White (Cards, buttons, text on dark backgrounds)
+rgba(255, 255, 255, 0.95) - White (95% opacity - Header background)
+rgba(255, 255, 255, 0.98) - White (98% opacity - Light overlays)
+rgba(255, 255, 255, 0.7) - White (70% opacity - Modern interior overlay)
+
+GRAY COLORS:
+------------
+#666 - Medium Gray (Testimonial text, service descriptions)
+#999 - Light Gray (Client logos, testimonial info, footer text)
+#ccc - Lighter Gray (Footer links, newsletter text)
+
+SHADOWS & OVERLAYS:
+-------------------
+rgba(0, 0, 0, 0.1) - Black (10% opacity - Header shadow, borders)
+rgba(0, 0, 0, 0.2) - Black (20% opacity - Button shadows, icon shadows)
+rgba(0, 0, 0, 0.08) - Black (8% opacity - Card shadows)
+rgba(0, 0, 0, 0.15) - Black (15% opacity - Card hover shadows)
+rgba(0, 0, 0, 0.05) - Black (5% opacity - Mobile menu shadow)
+rgba(102, 126, 234, 0.2) - Purple (20% opacity - Featured pricing card shadow)
+rgba(255, 255, 255, 0.1) - White (10% opacity - Hero grid pattern)
+
+GRADIENTS:
+----------
+linear-gradient(135deg, #667eea 0%, #764ba2 100%) - Purple to Purple gradient
+  (Hero background, service icons, testimonial avatars, team avatars, pricing)
+
