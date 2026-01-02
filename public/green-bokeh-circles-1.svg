@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 823.85 742.12">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #45c443;
+      }
+      
+      @keyframes orbit1 {
+        0% {
+          offset-distance: 0%;
+          opacity: 1;
+          transform: scale(1);
+        }
+        25% {
+          opacity: 0.7;
+          transform: scale(1.05);
+        }
+        50% {
+          offset-distance: 50%;
+          opacity: 0.4;
+          transform: scale(0.95);
+        }
+        75% {
+          opacity: 0.7;
+          transform: scale(1.03);
+        }
+        100% {
+          offset-distance: 100%;
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      @keyframes orbit2 {
+        0% {
+          offset-distance: 0%;
+          opacity: 1;
+          transform: scale(1);
+        }
+        25% {
+          opacity: 0.6;
+          transform: scale(0.97);
+        }
+        50% {
+          offset-distance: 50%;
+          opacity: 0.3;
+          transform: scale(1.04);
+        }
+        75% {
+          opacity: 0.6;
+          transform: scale(0.96);
+        }
+        100% {
+          offset-distance: 100%;
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      @keyframes orbit3 {
+        0% {
+          offset-distance: 0%;
+          opacity: 1;
+          transform: scale(1);
+        }
+        25% {
+          opacity: 0.65;
+          transform: scale(1.02);
+        }
+        50% {
+          offset-distance: 50%;
+          opacity: 0.35;
+          transform: scale(0.98);
+        }
+        75% {
+          opacity: 0.65;
+          transform: scale(1.05);
+        }
+        100% {
+          offset-distance: 100%;
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      @keyframes orbit4 {
+        0% {
+          offset-distance: 0%;
+          opacity: 1;
+          transform: scale(1);
+        }
+        25% {
+          opacity: 0.5;
+          transform: scale(0.95);
+        }
+        50% {
+          offset-distance: 50%;
+          opacity: 0.2;
+          transform: scale(1.05);
+        }
+        75% {
+          opacity: 0.5;
+          transform: scale(0.97);
+        }
+        100% {
+          offset-distance: 100%;
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      @keyframes orbit5 {
+        0% {
+          offset-distance: 0%;
+          opacity: 1;
+          transform: scale(1);
+        }
+        25% {
+          opacity: 0.75;
+          transform: scale(1.04);
+        }
+        50% {
+          offset-distance: 50%;
+          opacity: 0.5;
+          transform: scale(0.96);
+        }
+        75% {
+          opacity: 0.75;
+          transform: scale(1.02);
+        }
+        100% {
+          offset-distance: 100%;
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      @keyframes orbit6 {
+        0% {
+          offset-distance: 0%;
+          opacity: 1;
+          transform: scale(1);
+        }
+        20% {
+          opacity: 0.4;
+          transform: scale(1.05);
+        }
+        40% {
+          offset-distance: 40%;
+          opacity: 0.8;
+          transform: scale(0.95);
+        }
+        60% {
+          opacity: 0.5;
+          transform: scale(1.03);
+        }
+        80% {
+          offset-distance: 80%;
+          opacity: 0.9;
+          transform: scale(0.97);
+        }
+        100% {
+          offset-distance: 100%;
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      
+      .circle1 {
+        offset-path: path('M 358.86 177.66 A 80 80 0 1 1 358.85 177.66');
+        animation: orbit1 7s infinite linear;
+      }
+      
+      .circle2 {
+        offset-path: path('M 533.43 131.96 A 80 80 0 1 1 533.42 131.96');
+        animation: orbit2 5s infinite linear 0.3s;
+      }
+      
+      .circle3 {
+        offset-path: path('M 440.8 362.99 A 100 100 0 1 1 440.79 362.99');
+        animation: orbit6 6s infinite linear 0.6s;
+      }
+      
+      .circle4 {
+        offset-path: path('M 699.08 524.4 A 45 45 0 1 1 699.07 524.4');
+        animation: orbit4 5s infinite linear 0.9s;
+      }
+      
+      .circle5 {
+        offset-path: path('M 192.89 638.72 A 30 30 0 1 1 192.88 638.72');
+        animation: orbit5 5s infinite linear 1.2s;
+      }
+      
+      .circle6 {
+        offset-path: path('M 700.71 478.91 A 30 30 0 1 1 700.70 478.91');
+        animation: orbit5 5s infinite linear 1.5s;
+      }
+      
+      .circle7 {
+        offset-path: path('M 794.59 92.89 A 10 10 0 1 1 794.58 92.89');
+        animation: orbit4 5s infinite linear 1.8s;
+      }
+      
+      .circle8 {
+        offset-path: path('M 150.5 390.2 A 60 60 0 1 1 150.49 390.2');
+        animation: orbit3 5s infinite linear 2.1s;
+      }
+      
+      .circle9 {
+        offset-path: path('M 620.3 75.4 A 20 20 0 1 1 620.29 75.4');
+        animation: orbit5 5s infinite linear 2.4s;
+      }
+      
+      .circle10 {
+        offset-path: path('M 305.7 480.1 A 80 80 0 1 1 305.69 480.1');
+        animation: orbit2 5s infinite linear 2.7s;
+      }
+      
+      .circle11 {
+        offset-path: path('M 755.2 302.8 A 18 18 0 1 1 755.19 302.8');
+        animation: orbit5 5s infinite linear 3.0s;
+      }
+      
+      .circle12 {
+        offset-path: path('M 85.6 140.5 A 40 40 0 1 1 85.59 140.5');
+        animation: orbit3 5s infinite linear 3.3s;
+      }
+      
+      .circle13 {
+        offset-path: path('M 580.9 430.3 A 50 50 0 1 1 580.89 430.3');
+        animation: orbit1 5s infinite linear 3.6s;
+      }
+      
+      .circle14 {
+        offset-path: path('M 410.4 116.7 A 14 14 0 1 1 410.39 116.7');
+        animation: orbit4 5s infinite linear 3.9s;
+      }
+      
+      .circle15 {
+        offset-path: path('M 220.8 485.6 A 35 35 0 1 1 220.79 485.6');
+        animation: orbit5 5s infinite linear 4.2s;
+      }
+      
+      .circle16 {
+        offset-path: path('M 670.5 655.3 A 25 25 0 1 1 670.49 655.3');
+        animation: orbit3 5s infinite linear 4.5s;
+      }
+      
+      .circle17 {
+        offset-path: path('M 125.3 66.9 A 19 19 0 1 1 125.29 66.9');
+        animation: orbit1 5s infinite linear 4.8s;
+      }
+      
+      .circle18 {
+        offset-path: path('M 280.5 150.3 A 35 35 0 1 1 280.49 150.3');
+        animation: orbit2 5s infinite linear 0.5s;
+        opacity: 0.85;
+      }
+      
+      .circle19 {
+        offset-path: path('M 650.8 420.7 A 55 55 0 1 1 650.79 420.7');
+        animation: orbit3 5s infinite linear 1.1s;
+        opacity: 0.6;
+      }
+      
+      .circle20 {
+        offset-path: path('M 95.4 320.9 A 28 28 0 1 1 95.39 320.9');
+        animation: orbit5 5s infinite linear 1.7s;
+        opacity: 0.75;
+      }
+      
+      .circle21 {
+        offset-path: path('M 475.2 520.6 A 45 45 0 1 1 475.19 520.6');
+        animation: orbit1 5s infinite linear 2.3s;
+        opacity: 0.65;
+      }
+      
+      .circle22 {
+        offset-path: path('M 730.3 180.4 A 38 38 0 1 1 730.29 180.4');
+        animation: orbit4 5s infinite linear 2.9s;
+        opacity: 0.7;
+      }
+      
+      .circle23 {
+        offset-path: path('M 350.7 660.5 A 25 25 0 1 1 350.69 660.5');
+        animation: orbit5 5s infinite linear 3.5s;
+        opacity: 0.55;
+      }
+      
+      .circle24 {
+        offset-path: path('M 550.9 300.8 A 42 42 0 1 1 550.89 300.8');
+        animation: orbit2 5s infinite linear 4.1s;
+        opacity: 0.8;
+      }
+      
+      .circle25 {
+        offset-path: path('M 180.6 560.2 A 32 32 0 1 1 180.59 560.2');
+        animation: orbit3 5s infinite linear 0.8s;
+        opacity: 0.7;
+      }
+      
+      .circle26 {
+        offset-path: path('M 690.4 240.6 A 48 48 0 1 1 690.39 240.6');
+        animation: orbit1 5s infinite linear 1.4s;
+        opacity: 0.65;
+      }
+      
+      .circle27 {
+        offset-path: path('M 400.3 420.9 A 38 38 0 1 1 400.29 420.9');
+        animation: orbit4 5s infinite linear 2.0s;
+        opacity: 0.75;
+      }
+    </style>
+  </defs>
+  <circle class="cls-1 circle1" cx="0" cy="0" r="181.2"/>
+  <circle class="cls-1 circle2" cx="0" cy="0" r="129.14"/>
+  <circle class="cls-1 circle3" cx="0" cy="0" r="129.14"/>
+  <circle class="cls-1 circle4" cx="0" cy="0" r="48.49"/>
+  <circle class="cls-1 circle5" cx="0" cy="0" r="30.51"/>
+  <circle class="cls-1 circle6" cx="0" cy="0" r="30.51"/>
+  <circle class="cls-1 circle7" cx="0" cy="0" r="9.26"/>
+  <circle class="cls-1 circle8" cx="0" cy="0" r="65.3"/>
+  <circle class="cls-1 circle9" cx="0" cy="0" r="22.8"/>
+  <circle class="cls-1 circle10" cx="0" cy="0" r="85.5"/>
+  <circle class="cls-1 circle11" cx="0" cy="0" r="18.4"/>
+  <circle class="cls-1 circle12" cx="0" cy="0" r="42.7"/>
+  <circle class="cls-1 circle13" cx="0" cy="0" r="55.9"/>
+  <circle class="cls-1 circle14" cx="0" cy="0" r="14.2"/>
+  <circle class="cls-1 circle15" cx="0" cy="0" r="38.6"/>
+  <circle class="cls-1 circle16" cx="0" cy="0" r="25.1"/>
+  <circle class="cls-1 circle17" cx="0" cy="0" r="19.5"/>
+  <circle class="cls-1 circle18" cx="0" cy="0" r="52.3"/>
+  <circle class="cls-1 circle19" cx="0" cy="0" r="72.8"/>
+  <circle class="cls-1 circle20" cx="0" cy="0" r="33.6"/>
+  <circle class="cls-1 circle21" cx="0" cy="0" r="61.4"/>
+  <circle class="cls-1 circle22" cx="0" cy="0" r="44.9"/>
+  <circle class="cls-1 circle23" cx="0" cy="0" r="28.7"/>
+  <circle class="cls-1 circle24" cx="0" cy="0" r="58.2"/>
+  <circle class="cls-1 circle25" cx="0" cy="0" r="40.5"/>
+  <circle class="cls-1 circle26" cx="0" cy="0" r="66.1"/>
+  <circle class="cls-1 circle27" cx="0" cy="0" r="49.3"/>
+
+</svg>

@@ -8,6 +8,16 @@ service cloud.firestore {
                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
     
+    // Registration requests collection
+    // Note: Server-side operations (via Admin SDK) bypass these rules
+    // These rules are for client-side access if needed in the future
+    match /registrationRequests/{requestId} {
+      allow read: if request.auth != null && 
+                    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      // Write operations are handled server-side only via Admin SDK
+      allow write: if false; // No client-side writes allowed
+    }
+    
     // Tickets collection
     match /tickets/{ticketId} {
       allow read: if request.auth != null && 

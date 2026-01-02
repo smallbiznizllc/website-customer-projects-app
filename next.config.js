@@ -10,9 +10,14 @@ const nextConfig = {
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/',
+        destination: '/creative-landing.html',
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig
-
-
-

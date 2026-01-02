@@ -9,6 +9,8 @@ import {
   Search, 
   FileText, 
   Calendar,
+  UserPlus,
+  Mail,
   LogOut 
 } from 'lucide-react'
 import { logout } from '@/lib/firebase/auth'
@@ -17,6 +19,7 @@ const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/tickets', label: 'Tickets', icon: Ticket },
   { href: '/admin/users', label: 'Users', icon: Users },
+  { href: '/admin/registrations', label: 'Registrations', icon: UserPlus },
   { href: '/admin/seo', label: 'SEO', icon: Search },
   { href: '/admin/content', label: 'Content', icon: FileText },
   { href: '/admin/calendar', label: 'Calendar', icon: Calendar },

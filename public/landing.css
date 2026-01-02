@@ -271,7 +271,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('hero-wave-bg.svg') no-repeat center center;
+            background: url('/hero-wave-bg.svg') no-repeat center center;
             background-size: cover;
             z-index: 0;
         }
@@ -473,7 +473,7 @@
         }
 
         section.what-we-do:before {
-            content: url(ninja-coder.png);
+            content: url(/ninja-coder.png);
             position: absolute;
             bottom: 371px;
             transform: scale(2) rotate(-5deg);
@@ -492,7 +492,7 @@
         }
 
         section.what-we-do:after {
-            content: url(african-hut-on-a-hill.png);
+            content: url(/african-hut-on-a-hill.png);
             position: absolute;
             top: -160px;
             right: -380px;
@@ -537,7 +537,7 @@
         
         /* Bundle and Save Section */
         .bundle-save:before{
-            content: url('sb-custom-border-white.svg');
+            content: url('/sb-custom-border-white.svg');
             position: absolute;
             top: 1vw;
             left: 0;
@@ -546,7 +546,7 @@
             z-index: 1;
         }
         .bundle-save:after{
-            content: url('sb-custom-border-gray.svg');
+            content: url('/sb-custom-border-gray.svg');
             position: absolute;
             bottom: -37vw;
             left: 0;
@@ -557,7 +557,7 @@
 
         @media (min-width: 768px) {
             .bundle-save:after{
-                content: url('sb-custom-border-gray.svg');
+                content: url('/sb-custom-border-gray.svg');
                 position: absolute;
                 bottom: -34vw;
                 left: 0;
@@ -592,7 +592,7 @@
         }
 
         section#bundle-save .container:after{
-            content: url(green-bokeh-circles-1.svg);
+            content: url(/green-bokeh-circles-1.svg);
             position: absolute;
             top: 0vw;
             left: -20vw;
@@ -897,7 +897,7 @@
 
         p.pricing-intro:after {
             transition: all .5s ease-in-out;
-            content: url(green-bg-blurb.svg);
+            content: url(/green-bg-blurb.svg);
             position: absolute;
             top: -8px;
             z-index: -1;
@@ -1190,7 +1190,7 @@
         }
 
         footer#contact:before {
-            content: url(man-silouhette-drk-gray.svg);
+            content: url(/man-silouhette-drk-gray.svg);
             position: absolute;
             top: -19vw;
             left: -5vw;
@@ -1199,7 +1199,7 @@
         }
 
         footer#contact:after {
-            content: url(city-silouhette-drk-gray.svg);
+            content: url(/city-silouhette-drk-gray.svg);
             position: absolute;
             top: -26vw;
             width: 80%;
@@ -1217,7 +1217,7 @@
         }
 
         section.domain-search:before {
-            content: url(sb-custom-border-light-gray.svg);
+            content: url(/sb-custom-border-light-gray.svg);
             position: absolute;
             width: 103%;
             top: -19.5vw;
@@ -1242,7 +1242,7 @@
         }
         
         h2.domain-search-title:before {
-            content: url(birds.svg);
+            content: url(/birds.svg);
             position: absolute;
             top: -133px;
             width: 840px;
@@ -1872,7 +1872,7 @@
             }
         }
         li.web-mobile-app:after {
-            content: url(web-and-mobile-app-bg.svg);
+            content: url(/web-and-mobile-app-bg.svg);
             position: absolute;
             z-index: -1;
             left: -1410px;
@@ -1888,7 +1888,7 @@
         }
 
         li.graphics-design:after {
-            content: url(graphics-bg.svg);
+            content: url(/graphics-bg.svg);
             position: absolute;
             z-index: -1;
             left: -350px;
@@ -1904,7 +1904,7 @@
         }
 
         li.printing-and-design:after {
-            content: url(3d-printing-bg.svg);
+            content: url(/3d-printing-bg.svg);
             position: absolute;
             z-index: -1;
             left: -1270px;

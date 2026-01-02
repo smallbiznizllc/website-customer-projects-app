@@ -43,17 +43,25 @@ if (!getApps().length) {
 export async function getAllUsers(): Promise<User[]> {
   if (!db) return []
   
-  const snapshot = await db.collection('users').get()
-  
-  return snapshot.docs.map(doc => {
-    const data = doc.data()
-    return {
-      id: doc.id,
-      ...data,
-      createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
-      lastLoginAt: data.lastLoginAt ? new Date(data.lastLoginAt) : undefined,
-    } as User
-  })
+  try {
+    const snapshot = await db.collection('users').get()
+    console.log(`getAllUsers: Found ${snapshot.docs.length} users in Firestore`)
+    
+    const users = snapshot.docs.map(doc => {
+      const data = doc.data()
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+        lastLoginAt: data.lastLoginAt ? new Date(data.lastLoginAt) : undefined,
+      } as User
+    })
+    
+    return users
+  } catch (error) {
+    console.error('Error fetching all users:', error)
+    return []
+  }
 }
 
 export async function createUser(

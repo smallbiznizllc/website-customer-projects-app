@@ -39,15 +39,15 @@ export interface CalendarConfig {
   blackoutDates: string[] // ISO date strings
   hoursOfOperation: {
     [key: string]: { // day of week: 'monday', 'tuesday', etc.
-      open: string // HH:mm format
-      close: string // HH:mm format
+      open?: string // HH:mm format (required if not closed)
+      close?: string // HH:mm format (required if not closed)
       closed?: boolean
     }
   }
   specialAvailability?: Array<{
     date: string // ISO date string
-    open: string
-    close: string
+    open?: string
+    close?: string
     closed?: boolean
   }>
 }
@@ -110,16 +110,23 @@ export async function isBlackoutDate(date: Date): Promise<boolean> {
 export async function getServiceHours(date: Date): Promise<{ open: string; close: string; closed: boolean } | null> {
   const config = await getCalendarConfig()
   const dateStr = date.toISOString().split('T')[0]
-  const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'lowercase' })
+  const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase()
   
   // Check special availability first
   if (config.specialAvailability) {
     const special = config.specialAvailability.find(s => s.date === dateStr)
     if (special) {
+      if (special.closed) {
+        return {
+          open: '00:00',
+          close: '00:00',
+          closed: true,
+        }
+      }
       return {
-        open: special.open,
-        close: special.close,
-        closed: special.closed || false,
+        open: special.open || '09:00',
+        close: special.close || '17:00',
+        closed: false,
       }
     }
   }
@@ -127,10 +134,17 @@ export async function getServiceHours(date: Date): Promise<{ open: string; close
   // Check regular hours
   const regularHours = config.hoursOfOperation[dayOfWeek]
   if (regularHours) {
+    if (regularHours.closed) {
+      return {
+        open: '00:00',
+        close: '00:00',
+        closed: true,
+      }
+    }
     return {
-      open: regularHours.open,
-      close: regularHours.close,
-      closed: regularHours.closed || false,
+      open: regularHours.open || '09:00',
+      close: regularHours.close || '17:00',
+      closed: false,
     }
   }
   

@@ -1,5 +1,4 @@
-// This would be called from Firebase Cloud Functions or GCP Cloud Run
-// For development, you can use a service like SendGrid, Mailgun, or AWS SES
+// Email service implementation using AWS SES
 
 interface TicketEmailParams {
   to: string
@@ -15,6 +14,14 @@ interface AdminNotificationParams {
   title: string
   description: string
   userEmail: string
+  createdAt: Date
+}
+
+interface RegistrationApprovalParams {
+  to: string
+  registrationId: string
+  email: string
+  displayName?: string
   createdAt: Date
 }
 
@@ -63,40 +70,55 @@ export async function sendTicketEmail({
     </html>
   `
 
-  // Implementation with SendGrid
-  if (process.env.SENDGRID_API_KEY) {
-    const sgMail = require('@sendgrid/mail')
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-    
-    await sgMail.send({
-      to,
-      from: process.env.FROM_EMAIL || 'noreply@yourdomain.com',
-      subject: `Ticket Update: ${title}`,
-      html: emailBody,
-    })
-    return
+  // Implementation with AWS SES
+  if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY && process.env.AWS_REGION) {
+    try {
+      const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses')
+      
+      const sesClient = new SESClient({
+        region: process.env.AWS_REGION,
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        },
+      })
+
+      const command = new SendEmailCommand({
+        Source: process.env.FROM_EMAIL || 'noreply@yourdomain.com',
+        Destination: {
+          ToAddresses: [to],
+        },
+        Message: {
+          Subject: {
+            Data: `Ticket Update: ${title}`,
+            Charset: 'UTF-8',
+          },
+          Body: {
+            Html: {
+              Data: emailBody,
+              Charset: 'UTF-8',
+            },
+          },
+        },
+      })
+
+      await sesClient.send(command)
+      return
+    } catch (error: any) {
+      console.error('AWS SES error:', error)
+      console.error('AWS SES error details:', {
+        name: error.name,
+        message: error.message,
+        code: error.Code,
+        statusCode: error.$metadata?.httpStatusCode,
+        requestId: error.$metadata?.requestId,
+      })
+      throw error
+    }
   }
 
-  // Implementation with Mailgun
-  if (process.env.MAILGUN_API_KEY && process.env.MAILGUN_DOMAIN) {
-    const formData = require('form-data')
-    const Mailgun = require('mailgun.js')
-    const mailgun = new Mailgun(formData)
-    const mg = mailgun.client({
-      username: 'api',
-      key: process.env.MAILGUN_API_KEY,
-    })
-
-    await mg.messages.create(process.env.MAILGUN_DOMAIN, {
-      from: `noreply@${process.env.MAILGUN_DOMAIN}`,
-      to: [to],
-      subject: `Ticket Update: ${title}`,
-      html: emailBody,
-    })
-    return
-  }
-
-  // Fallback: Log to console in development
+  // Fallback: Log to console if AWS credentials are not configured
+  console.error('AWS SES not configured. Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION in .env.local')
   console.log('Email would be sent:', { to, subject: `Ticket Update: ${title}` })
 }
 
@@ -148,45 +170,163 @@ export async function sendAdminNotificationEmail({
     </html>
   `
 
-  // Implementation with SendGrid
-  if (process.env.SENDGRID_API_KEY) {
-    const sgMail = require('@sendgrid/mail')
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-    
-    await sgMail.send({
-      to,
-      from: process.env.FROM_EMAIL || 'noreply@yourdomain.com',
-      subject: `🔔 New Ticket: ${title}`,
-      html: emailBody,
-    })
-    return
+  // Implementation with AWS SES
+  if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY && process.env.AWS_REGION) {
+    try {
+      const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses')
+      
+      const sesClient = new SESClient({
+        region: process.env.AWS_REGION,
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        },
+      })
+
+      const command = new SendEmailCommand({
+        Source: process.env.FROM_EMAIL || 'noreply@yourdomain.com',
+        Destination: {
+          ToAddresses: [to],
+        },
+        Message: {
+          Subject: {
+            Data: `🔔 New Ticket: ${title}`,
+            Charset: 'UTF-8',
+          },
+          Body: {
+            Html: {
+              Data: emailBody,
+              Charset: 'UTF-8',
+            },
+          },
+        },
+      })
+
+      await sesClient.send(command)
+      return
+    } catch (error: any) {
+      console.error('AWS SES error:', error)
+      console.error('AWS SES error details:', {
+        name: error.name,
+        message: error.message,
+        code: error.Code,
+        statusCode: error.$metadata?.httpStatusCode,
+        requestId: error.$metadata?.requestId,
+      })
+      throw error
+    }
   }
 
-  // Implementation with Mailgun
-  if (process.env.MAILGUN_API_KEY && process.env.MAILGUN_DOMAIN) {
-    const formData = require('form-data')
-    const Mailgun = require('mailgun.js')
-    const mailgun = new Mailgun(formData)
-    const mg = mailgun.client({
-      username: 'api',
-      key: process.env.MAILGUN_API_KEY,
-    })
-
-    await mg.messages.create(process.env.MAILGUN_DOMAIN, {
-      from: `noreply@${process.env.MAILGUN_DOMAIN}`,
-      to: [to],
-      subject: `🔔 New Ticket: ${title}`,
-      html: emailBody,
-    })
-    return
-  }
-
-  // Fallback: Log to console in development
+  // Fallback: Log to console if AWS credentials are not configured
+  console.error('AWS SES not configured. Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION in .env.local')
   console.log('Admin notification email would be sent:', { 
     to, 
     subject: `🔔 New Ticket: ${title}`,
     ticketId,
     userEmail 
+  })
+}
+
+export async function sendRegistrationApprovalEmail({
+  to,
+  registrationId,
+  email,
+  displayName,
+  createdAt,
+}: RegistrationApprovalParams) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const adminUrl = `${appUrl}/admin/registrations`
+
+  const emailBody = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #10b981; color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+        .content { background-color: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; }
+        .button { display: inline-block; padding: 12px 24px; background-color: #10b981; color: white; text-decoration: none; border-radius: 6px; margin-top: 20px; }
+        .info-box { background-color: white; padding: 15px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #10b981; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🔔 New User Registration Request</h1>
+        </div>
+        <div class="content">
+          <div class="info-box">
+            <p><strong>Email:</strong> ${email}</p>
+            ${displayName ? `<p><strong>Name:</strong> ${displayName}</p>` : ''}
+            <p><strong>Requested:</strong> ${createdAt.toLocaleString()}</p>
+          </div>
+          <p>A new user has requested access to the system and is waiting for approval.</p>
+          <a href="${adminUrl}" class="button">Review Registration in Admin Panel</a>
+          <p style="margin-top: 20px; font-size: 12px; color: #6b7280;">
+            Registration ID: ${registrationId}
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `
+
+  // Implementation with AWS SES
+  if (process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY && process.env.AWS_REGION) {
+    try {
+      const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses')
+      
+      const sesClient = new SESClient({
+        region: process.env.AWS_REGION,
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        },
+      })
+
+      const command = new SendEmailCommand({
+        Source: process.env.FROM_EMAIL || 'noreply@yourdomain.com',
+        Destination: {
+          ToAddresses: [to],
+        },
+        Message: {
+          Subject: {
+            Data: `🔔 New Registration Request: ${email}`,
+            Charset: 'UTF-8',
+          },
+          Body: {
+            Html: {
+              Data: emailBody,
+              Charset: 'UTF-8',
+            },
+          },
+        },
+      })
+
+      await sesClient.send(command)
+      return
+    } catch (error: any) {
+      console.error('AWS SES error:', error)
+      console.error('AWS SES error details:', {
+        name: error.name,
+        message: error.message,
+        code: error.Code,
+        statusCode: error.$metadata?.httpStatusCode,
+        requestId: error.$metadata?.requestId,
+      })
+      throw error
+    }
+  }
+
+  // Fallback: Log to console if AWS credentials are not configured
+  console.error('AWS SES not configured. Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION in .env.local')
+  console.log('Registration approval email would be sent:', { 
+    to, 
+    subject: `🔔 New Registration Request: ${email}`,
+    registrationId,
+    email,
+    displayName 
   })
 }
 

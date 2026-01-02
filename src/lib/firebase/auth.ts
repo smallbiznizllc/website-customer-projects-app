@@ -25,8 +25,9 @@ export const getCurrentUser = (): Promise<FirebaseUser | null> => {
   if (!auth || !isFirebaseConfigured()) {
     return Promise.resolve(null)
   }
+  const authInstance = auth // TypeScript type narrowing
   return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(authInstance, (user) => {
       unsubscribe()
       resolve(user)
     })

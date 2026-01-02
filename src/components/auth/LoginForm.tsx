@@ -7,6 +7,7 @@ import * as z from 'zod'
 import { login } from '@/lib/firebase/auth'
 import { getUserRole } from '@/lib/firebase/auth'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -98,6 +99,15 @@ export default function LoginForm() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Don't have an account?{' '}
+            <Link href="/register" className="text-primary hover:underline">
+              Register
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )
