@@ -8,6 +8,7 @@ import { login } from '@/lib/firebase/auth'
 import { getUserRole } from '@/lib/firebase/auth'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Home } from 'lucide-react'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -54,7 +55,16 @@ export default function LoginForm() {
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">Login</h2>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
+          >
+            <Home className="w-4 h-4" />
+            Home
+          </Link>
+        </div>
 
         {error && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
