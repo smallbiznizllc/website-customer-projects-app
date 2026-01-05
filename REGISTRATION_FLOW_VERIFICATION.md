@@ -149,3 +149,4 @@ To verify the registration flow works correctly:
 - Check Firebase Admin SDK credentials are correct
 - Check server console for initialization errors
 
+

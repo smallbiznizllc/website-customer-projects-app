@@ -133,3 +133,4 @@ npm run build && firebase deploy --only hosting
 2. **For full app functionality**: Consider deploying to Vercel or setting up Cloud Run
 3. **For production**: Set up proper domain, SSL, and environment variables
 
+

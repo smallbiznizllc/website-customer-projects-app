@@ -183,6 +183,10 @@
             line-height: 1.6;
             color: var(--color-text);
             overflow-x: hidden;
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* Header */
@@ -269,6 +273,9 @@
             padding: 120px 2rem 80px;
             position: relative;
             overflow: hidden;
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100%;
         }
 
         .hero::before {
@@ -308,7 +315,17 @@
             transition: all 1.5s ease-out;
         }
 
-
+        @media screen and (max-width: 412px) and (orientation: portrait) {
+            img.computer-screen.section-animate.visible {
+                opacity: 1;
+                transform: scale(.3) translateX(0);
+                top: -180px;
+            }
+            img.prince-clock-parts{
+                transform: scale(0.2) rotate(-5deg);
+                top: 260px;
+            }
+        }
         
 
 
@@ -467,6 +484,17 @@
         .container {
             margin: 0 auto;
             padding: 0 2rem;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Safari overflow fix for all sections */
+        section {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            position: relative;
         }
 
         .section-title {
@@ -1930,63 +1958,6 @@
             top: -1060px;
             transform: scale(0.25);
             z-index: 1;
-        }
-
-
-
-        @media screen and (max-width: 412px) and (orientation: portrait) {
-            img.computer-screen.section-animate.visible {
-                opacity: 1;
-                transform: scale(.3) translateX(0);
-                top: -180px;
-            }
-            img.prince-clock-parts{
-                transform: scale(0.2) rotate(-5deg);
-                top: 260px;
-            }
-            .what-we-do .container ul.services-list li {
-                max-width: unset;
-                margin: 25rem 0;
-                padding-left: unset;
-                position: relative;
-                color: #ffffff;
-            }
-
-            .what-we-do .container ul li:nth-child(2):not(.checklist-item) {
-                padding-left: unset;
-                padding-right: unset;
-                right: 0vw;
-                max-width: unset;
-            }
-
-            img.muziktruck-app-on-mobile-devices {
-                position: absolute;
-                left: -160px;
-                top: -420px;
-                transform: scale(0.35);
-            }
-
-            img.sb-car-1 {
-                position: absolute;
-                left: unset;
-                right: -270px;
-                top: -310px;
-                transform: scale(0.5);
-            }
-
-            img.three-d-printed-kick-pedal-2 {
-                position: absolute;
-                left: -880px;
-                top: -1460px;
-                transform: scale(0.1);
-                z-index: 1;
-            }
-
-            p.pricing-intro:after {
-                top: 42px;
-                left: 3vw;
-                transform: rotate(15deg) scaleX(3) scaleY(4.5);
-                }
         }
 
 

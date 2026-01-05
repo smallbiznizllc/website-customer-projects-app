@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Corporate Look - Pinnacle of Creative Design</title>
+    <title>Smallbizniz LLC - Where Your Business Is Our "Bizniz"</title>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <link rel="stylesheet" href="/landing.css">
 </head>
@@ -400,22 +400,21 @@
                     <p>Lead Developer and Designer</p>
                 </div>
             </div>
-            <form class="contact-form" id="contactForm">
+            <div class="contact-form">
                 <h4 style="color: white; margin-bottom: 1rem;">Contact us for help with your project today!</h4>
-                <input type="text" id="contactName" name="name" placeholder="Your Name" required>
-                <input type="email" id="contactEmail" name="email" placeholder="Your Email" required>
-                <input type="text" id="contactSubject" name="subject" placeholder="Subject" required>
-                <textarea id="contactMessage" name="message" placeholder="Your Message" required></textarea>
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Your Email" required>
+                <input type="text" placeholder="Subject" required>
+                <textarea placeholder="Your Message" required></textarea>
                 <div class="g-recaptcha" data-sitekey="YOUR_RECAPTCHA_SITE_KEY"></div>
-                <div id="contactFormMessage" style="display: none; padding: 10px; margin: 10px 0; border-radius: 4px;"></div>
-                <button type="submit" id="contactSubmitBtn" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <button type="submit" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                     Send Message
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
                         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
-            </form>
+            </div>
         </div>
         <div class="footer-bottom">
             <div class="footer-logo">
@@ -683,84 +682,6 @@
                 behavior: 'smooth'
             });
         });
-    </script>
-
-    <script>
-        // Contact Form Submission
-        const contactForm = document.getElementById('contactForm');
-        const contactFormMessage = document.getElementById('contactFormMessage');
-        const contactSubmitBtn = document.getElementById('contactSubmitBtn');
-
-        if (contactForm) {
-            contactForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const name = document.getElementById('contactName').value.trim();
-                const email = document.getElementById('contactEmail').value.trim();
-                const subject = document.getElementById('contactSubject').value.trim();
-                const message = document.getElementById('contactMessage').value.trim();
-
-                // Hide previous messages
-                contactFormMessage.style.display = 'none';
-                contactFormMessage.className = '';
-
-                // Disable submit button
-                contactSubmitBtn.disabled = true;
-                const originalText = contactSubmitBtn.innerHTML;
-                contactSubmitBtn.innerHTML = 'Sending...';
-
-                try {
-                    const response = await fetch('/api/contact', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ name, email, subject, message }),
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        // Success
-                        contactFormMessage.style.display = 'block';
-                        contactFormMessage.style.backgroundColor = '#d1fae5';
-                        contactFormMessage.style.color = '#065f46';
-                        contactFormMessage.style.border = '1px solid #10b981';
-                        contactFormMessage.style.padding = '10px';
-                        contactFormMessage.style.margin = '10px 0';
-                        contactFormMessage.style.borderRadius = '4px';
-                        contactFormMessage.textContent = data.message || 'Your message has been sent successfully!';
-                        
-                        // Reset form
-                        contactForm.reset();
-                    } else {
-                        // Error
-                        contactFormMessage.style.display = 'block';
-                        contactFormMessage.style.backgroundColor = '#fee2e2';
-                        contactFormMessage.style.color = '#991b1b';
-                        contactFormMessage.style.border = '1px solid #ef4444';
-                        contactFormMessage.style.padding = '10px';
-                        contactFormMessage.style.margin = '10px 0';
-                        contactFormMessage.style.borderRadius = '4px';
-                        contactFormMessage.textContent = data.error || 'Failed to send message. Please try again.';
-                    }
-                } catch (error) {
-                    console.error('Contact form error:', error);
-                    contactFormMessage.style.display = 'block';
-                    contactFormMessage.style.backgroundColor = '#fee2e2';
-                    contactFormMessage.style.color = '#991b1b';
-                    contactFormMessage.style.border = '1px solid #ef4444';
-                    contactFormMessage.style.padding = '10px';
-                    contactFormMessage.style.margin = '10px 0';
-                    contactFormMessage.style.borderRadius = '4px';
-                    contactFormMessage.textContent = 'An error occurred. Please try again later.';
-                } finally {
-                    // Re-enable submit button
-                    contactSubmitBtn.disabled = false;
-                    contactSubmitBtn.innerHTML = originalText;
-                }
-            });
-        }
     </script>
 </body>
 </html>

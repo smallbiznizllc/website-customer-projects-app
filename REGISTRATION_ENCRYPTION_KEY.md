@@ -66,3 +66,4 @@ After setting the key and restarting the server:
 2. If it works, the key is correct
 3. If you still get "bad decrypt", the existing registration was encrypted with a different key
 
+
