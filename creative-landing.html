@@ -375,8 +375,8 @@
     <section class="domain-search">
         <div class="domain-search-container">
             <h2 class="domain-search-title"><span class="outlined-text">Find The</span> Perfect Domain</h2>
-            <form class="domain-search-form">
-                <input type="text" placeholder="Enter domain name (e.g., yourbusiness.com)" class="domain-input" required>
+            <form id="domainSearchForm" class="domain-search-form">
+                <input type="text" id="domainInput" placeholder="Enter domain name (e.g., yourbusiness.com)" class="domain-input" required>
                 <button type="submit" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                     Search Domain
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
@@ -384,6 +384,7 @@
                     </svg>
                 </button>
             </form>
+            <div id="domainSearchResults" style="margin-top: 2rem; display: none;"></div>
         </div>
     </section>
 
@@ -776,6 +777,157 @@
                             formMessage.className = 'error-message';
                             formMessage.style.display = 'block';
                         }
+                    } finally {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = originalButtonText;
+                    }
+                });
+            }
+        });
+    </script>
+    
+    <script>
+        // Domain Search Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const domainSearchForm = document.getElementById('domainSearchForm');
+            const domainInput = document.getElementById('domainInput');
+            const domainResults = document.getElementById('domainSearchResults');
+            const submitButton = domainSearchForm.querySelector('button[type="submit"]');
+            
+            // Add result styles
+            const style = document.createElement('style');
+            style.textContent = `
+                .domain-result-card {
+                    background: white;
+                    border-radius: 8px;
+                    padding: 1.5rem;
+                    margin-top: 1rem;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                }
+                .domain-result-available {
+                    border-left: 4px solid #10b981;
+                }
+                .domain-result-unavailable {
+                    border-left: 4px solid #ef4444;
+                }
+                .domain-result-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 0.5rem;
+                }
+                .domain-name {
+                    font-size: 1.25rem;
+                    font-weight: bold;
+                    color: #1f2937;
+                }
+                .domain-status {
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 20px;
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                }
+                .domain-status-available {
+                    background-color: #d1fae5;
+                    color: #065f46;
+                }
+                .domain-status-unavailable {
+                    background-color: #fee2e2;
+                    color: #991b1b;
+                }
+                .domain-price {
+                    margin-top: 0.5rem;
+                    font-size: 1.125rem;
+                    color: #059669;
+                    font-weight: 600;
+                }
+                .domain-action-btn {
+                    margin-top: 1rem;
+                    padding: 0.75rem 1.5rem;
+                    background: var(--color-primary);
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: background 0.3s;
+                }
+                .domain-action-btn:hover {
+                    background: var(--color-primary-dark);
+                }
+            `;
+            document.head.appendChild(style);
+
+            if (domainSearchForm) {
+                domainSearchForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const domainName = domainInput.value.trim();
+                    if (!domainName) {
+                        alert('Please enter a domain name');
+                        return;
+                    }
+
+                    submitButton.disabled = true;
+                    const originalButtonText = submitButton.innerHTML;
+                    submitButton.innerHTML = 'Searching... <svg class="animate-spin ml-2 h-4 w-4 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+                    domainResults.style.display = 'none';
+                    domainResults.innerHTML = '';
+
+                    try {
+                        const response = await fetch('/api/domain-search', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ domain: domainName }),
+                        });
+
+                        const result = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(result.error || 'Failed to search domain');
+                        }
+
+                        // Display results
+                        const resultCard = document.createElement('div');
+                        resultCard.className = `domain-result-card domain-result-${result.available ? 'available' : 'unavailable'}`;
+                        
+                        const statusClass = result.available ? 'domain-status-available' : 'domain-status-unavailable';
+                        const statusText = result.available ? 'Available' : 'Unavailable';
+                        
+                        resultCard.innerHTML = `
+                            <div class="domain-result-header">
+                                <span class="domain-name">${result.domain}</span>
+                                <span class="domain-status ${statusClass}">${statusText}</span>
+                            </div>
+                            ${result.available && result.price ? `
+                                <div class="domain-price">$${result.price.toFixed(2)}/${result.period || 1} year</div>
+                                <button class="domain-action-btn" onclick="window.open('https://www.godaddy.com/en-us/domainsearch/find?checkAvail=1&tmskey=&domainToCheck=${encodeURIComponent(result.domain)}', '_blank')">
+                                    Register Domain
+                                </button>
+                            ` : result.available ? `
+                                <button class="domain-action-btn" onclick="window.open('https://www.godaddy.com/en-us/domainsearch/find?checkAvail=1&tmskey=&domainToCheck=${encodeURIComponent(result.domain)}', '_blank')">
+                                    Check Pricing
+                                </button>
+                            ` : `
+                                <p style="color: #6b7280; margin-top: 0.5rem;">This domain is already taken. Try searching for another domain.</p>
+                            `}
+                        `;
+
+                        domainResults.appendChild(resultCard);
+                        domainResults.style.display = 'block';
+                        
+                        // Scroll to results
+                        domainResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    } catch (error: any) {
+                        console.error('Domain search error:', error);
+                        domainResults.innerHTML = `
+                            <div class="domain-result-card domain-result-unavailable">
+                                <p style="color: #991b1b;">${error.message || 'Failed to search domain. Please try again.'}</p>
+                            </div>
+                        `;
+                        domainResults.style.display = 'block';
                     } finally {
                         submitButton.disabled = false;
                         submitButton.innerHTML = originalButtonText;
