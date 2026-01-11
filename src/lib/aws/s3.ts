@@ -20,7 +20,7 @@ export const generatePresignedUploadUrl = async (
     throw new Error('File size exceeds 2MB limit')
   }
 
-  const key = `tickets/${Date.now()}-${fileName}`
+  const key = `customer-projects/tickets/${Date.now()}-${fileName}`
   
   const command = new PutObjectCommand({
     Bucket: process.env.S3_BUCKET_NAME!,

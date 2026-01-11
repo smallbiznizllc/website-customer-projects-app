@@ -41,6 +41,8 @@ if (!getApps().length) {
   }
 }
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: Request) {
   try {
     // Get the auth token from the request

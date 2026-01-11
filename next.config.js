@@ -2,7 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['your-s3-bucket.s3.amazonaws.com'],
+    domains: process.env.S3_BUCKET_NAME 
+      ? [`${process.env.S3_BUCKET_NAME}.s3.amazonaws.com`]
+      : [],
   },
   env: {
     AWS_REGION: process.env.AWS_REGION,
@@ -17,6 +19,14 @@ const nextConfig = {
         destination: '/creative-landing.html',
       },
     ]
+  },
+  // Exclude functions directory from Next.js compilation
+  webpack: (config, { isServer }) => {
+    config.module.rules.push({
+      test: /functions\/.*\.ts$/,
+      use: 'ignore-loader',
+    })
+    return config
   },
 }
 
