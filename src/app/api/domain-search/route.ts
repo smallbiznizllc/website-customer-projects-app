@@ -67,19 +67,25 @@ export async function POST(request: NextRequest) {
     console.log('GoDaddy API request:', {
       url: `${apiUrl}/v1/domains/available`,
       domain: cleanDomain,
+      method: 'POST',
       hasCredentials: !!(apiKey && apiSecret)
     })
 
     // Check domain availability via GoDaddy Reseller API
     // Note: GoDaddy requires at least 50 domains in account OR Discount Domain Club membership for availability API
-    const availabilityUrl = `${apiUrl}/v1/domains/available?domain=${encodeURIComponent(cleanDomain)}`
+    // The API requires a POST request with the domain in the request body
+    const availabilityUrl = `${apiUrl}/v1/domains/available`
     
     const response = await fetch(availabilityUrl, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Authorization': `sso-key ${apiKey}:${apiSecret}`,
+        'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
+      body: JSON.stringify({
+        domain: cleanDomain
+      }),
     })
 
     const responseText = await response.text()
@@ -108,11 +114,25 @@ export async function POST(request: NextRequest) {
         }
       }
       
+      // For 400 errors, include more details
+      if (response.status === 400) {
+        try {
+          const errorData = JSON.parse(responseText)
+          errorMessage = errorData.message || errorData.code || errorMessage
+          if (errorData.fields) {
+            errorMessage += ` Fields: ${JSON.stringify(errorData.fields)}`
+          }
+        } catch {
+          // Use the raw text if JSON parsing fails
+          errorMessage = `Bad Request: ${responseText.substring(0, 300)}`
+        }
+      }
+      
       return NextResponse.json(
         { 
           error: errorMessage,
           status: response.status,
-          details: response.status !== 401 && response.status !== 403 ? responseText.substring(0, 200) : undefined
+          details: response.status !== 401 && response.status !== 403 ? responseText.substring(0, 300) : undefined
         },
         { status: 500 }
       )
