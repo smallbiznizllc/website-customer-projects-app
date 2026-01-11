@@ -375,7 +375,7 @@
     <section class="domain-search">
         <div class="domain-search-container">
             <h2 class="domain-search-title"><span class="outlined-text">Find The</span> Perfect Domain</h2>
-            <form id="domainSearchForm" class="domain-search-form">
+            <form id="domainSearchForm" class="domain-search-form" onsubmit="return false;">
                 <input type="text" id="domainInput" placeholder="Enter domain name (e.g., yourbusiness.com)" class="domain-input" required>
                 <button type="submit" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                     Search Domain
@@ -792,7 +792,17 @@
             const domainSearchForm = document.getElementById('domainSearchForm');
             const domainInput = document.getElementById('domainInput');
             const domainResults = document.getElementById('domainSearchResults');
+            
+            if (!domainSearchForm || !domainInput || !domainResults) {
+                console.error('Domain search form elements not found');
+                return;
+            }
+            
             const submitButton = domainSearchForm.querySelector('button[type="submit"]');
+            if (!submitButton) {
+                console.error('Submit button not found');
+                return;
+            }
             
             // Add result styles
             const style = document.createElement('style');
@@ -858,82 +868,90 @@
             `;
             document.head.appendChild(style);
 
-            if (domainSearchForm) {
-                domainSearchForm.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    
-                    const domainName = domainInput.value.trim();
-                    if (!domainName) {
-                        alert('Please enter a domain name');
-                        return;
-                    }
+            domainSearchForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const domainName = domainInput.value.trim();
+                if (!domainName) {
+                    alert('Please enter a domain name');
+                    return false;
+                }
 
-                    submitButton.disabled = true;
-                    const originalButtonText = submitButton.innerHTML;
-                    submitButton.innerHTML = 'Searching... <svg class="animate-spin ml-2 h-4 w-4 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-                    domainResults.style.display = 'none';
-                    domainResults.innerHTML = '';
+                submitButton.disabled = true;
+                const originalButtonText = submitButton.innerHTML;
+                submitButton.innerHTML = 'Searching... <svg class="animate-spin ml-2 h-4 w-4 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+                domainResults.style.display = 'none';
+                domainResults.innerHTML = '';
 
+                try {
+                    const response = await fetch('/api/domain-search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ domain: domainName }),
+                    });
+
+                    let result;
                     try {
-                        const response = await fetch('/api/domain-search', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ domain: domainName }),
-                        });
-
-                        const result = await response.json();
-
-                        if (!response.ok) {
-                            throw new Error(result.error || 'Failed to search domain');
-                        }
-
-                        // Display results
-                        const resultCard = document.createElement('div');
-                        resultCard.className = `domain-result-card domain-result-${result.available ? 'available' : 'unavailable'}`;
-                        
-                        const statusClass = result.available ? 'domain-status-available' : 'domain-status-unavailable';
-                        const statusText = result.available ? 'Available' : 'Unavailable';
-                        
-                        resultCard.innerHTML = `
-                            <div class="domain-result-header">
-                                <span class="domain-name">${result.domain}</span>
-                                <span class="domain-status ${statusClass}">${statusText}</span>
-                            </div>
-                            ${result.available && result.price ? `
-                                <div class="domain-price">$${result.price.toFixed(2)}/${result.period || 1} year</div>
-                                <button class="domain-action-btn" onclick="window.open('https://www.godaddy.com/en-us/domainsearch/find?checkAvail=1&tmskey=&domainToCheck=${encodeURIComponent(result.domain)}', '_blank')">
-                                    Register Domain
-                                </button>
-                            ` : result.available ? `
-                                <button class="domain-action-btn" onclick="window.open('https://www.godaddy.com/en-us/domainsearch/find?checkAvail=1&tmskey=&domainToCheck=${encodeURIComponent(result.domain)}', '_blank')">
-                                    Check Pricing
-                                </button>
-                            ` : `
-                                <p style="color: #6b7280; margin-top: 0.5rem;">This domain is already taken. Try searching for another domain.</p>
-                            `}
-                        `;
-
-                        domainResults.appendChild(resultCard);
-                        domainResults.style.display = 'block';
-                        
-                        // Scroll to results
-                        domainResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    } catch (error: any) {
-                        console.error('Domain search error:', error);
-                        domainResults.innerHTML = `
-                            <div class="domain-result-card domain-result-unavailable">
-                                <p style="color: #991b1b;">${error.message || 'Failed to search domain. Please try again.'}</p>
-                            </div>
-                        `;
-                        domainResults.style.display = 'block';
-                    } finally {
-                        submitButton.disabled = false;
-                        submitButton.innerHTML = originalButtonText;
+                        result = await response.json();
+                    } catch (jsonError) {
+                        const text = await response.text();
+                        throw new Error(text || 'Invalid response from server');
                     }
-                });
-            }
+
+                    if (!response.ok) {
+                        throw new Error(result.error || 'Failed to search domain');
+                    }
+
+                    // Display results
+                    const resultCard = document.createElement('div');
+                    resultCard.className = `domain-result-card domain-result-${result.available ? 'available' : 'unavailable'}`;
+                    
+                    const statusClass = result.available ? 'domain-status-available' : 'domain-status-unavailable';
+                    const statusText = result.available ? 'Available' : 'Unavailable';
+                    
+                    resultCard.innerHTML = `
+                        <div class="domain-result-header">
+                            <span class="domain-name">${result.domain || domainName}</span>
+                            <span class="domain-status ${statusClass}">${statusText}</span>
+                        </div>
+                        ${result.available && result.price ? `
+                            <div class="domain-price">$${result.price.toFixed(2)}/${result.period || 1} year</div>
+                            <button class="domain-action-btn" onclick="window.open('https://www.godaddy.com/en-us/domainsearch/find?checkAvail=1&tmskey=&domainToCheck=${encodeURIComponent(result.domain || domainName)}', '_blank')">
+                                Register Domain
+                            </button>
+                        ` : result.available ? `
+                            <button class="domain-action-btn" onclick="window.open('https://www.godaddy.com/en-us/domainsearch/find?checkAvail=1&tmskey=&domainToCheck=${encodeURIComponent(result.domain || domainName)}', '_blank')">
+                                Check Pricing
+                            </button>
+                        ` : `
+                            <p style="color: #6b7280; margin-top: 0.5rem;">This domain is already taken. Try searching for another domain.</p>
+                        `}
+                    `;
+
+                    domainResults.appendChild(resultCard);
+                    domainResults.style.display = 'block';
+                    
+                    // Scroll to results
+                    domainResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } catch (error) {
+                    console.error('Domain search error:', error);
+                    const errorMessage = error instanceof Error ? error.message : 'Failed to search domain. Please try again.';
+                    domainResults.innerHTML = `
+                        <div class="domain-result-card domain-result-unavailable">
+                            <p style="color: #991b1b;">${errorMessage}</p>
+                        </div>
+                    `;
+                    domainResults.style.display = 'block';
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+                }
+                
+                return false;
+            });
         });
     </script>
 </body>

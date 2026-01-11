@@ -58,31 +58,56 @@ export async function POST(request: NextRequest) {
     })
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('GoDaddy API error:', response.status, errorText)
+      let errorText = ''
+      try {
+        errorText = await response.text()
+        console.error('GoDaddy API error:', response.status, errorText)
+      } catch (e) {
+        console.error('GoDaddy API error (could not read response):', response.status)
+      }
       
       if (response.status === 401) {
         return NextResponse.json(
-          { error: 'Invalid GoDaddy API credentials' },
+          { error: 'Invalid GoDaddy API credentials. Please check your API key and secret.' },
+          { status: 500 }
+        )
+      }
+      
+      if (response.status === 403) {
+        return NextResponse.json(
+          { error: 'GoDaddy API access forbidden. Please check your reseller account permissions.' },
           { status: 500 }
         )
       }
       
       return NextResponse.json(
-        { error: 'Failed to check domain availability. Please try again.' },
+        { error: `Failed to check domain availability (${response.status}). Please try again.` },
         { status: 500 }
       )
     }
 
-    const data = await response.json()
+    let data
+    try {
+      data = await response.json()
+    } catch (e) {
+      console.error('Failed to parse GoDaddy API response:', e)
+      return NextResponse.json(
+        { error: 'Invalid response from domain service' },
+        { status: 500 }
+      )
+    }
+    
+    // Handle GoDaddy API response format
+    // The API may return the domain data directly or in an array
+    const domainData = Array.isArray(data) && data.length > 0 ? data[0] : data
     
     // Format response
     const result: DomainAvailabilityResponse = {
       domain: cleanDomain,
-      available: data.available === true,
-      price: data.price ? data.price / 1000000 : undefined, // GoDaddy returns price in micro-units (divide by 1,000,000)
-      currency: data.currency || 'USD',
-      period: data.period || 1,
+      available: domainData.available === true,
+      price: domainData.price ? domainData.price / 1000000 : undefined, // GoDaddy returns price in micro-units (divide by 1,000,000)
+      currency: domainData.currency || 'USD',
+      period: domainData.period || 1,
     }
 
     return NextResponse.json(result)
