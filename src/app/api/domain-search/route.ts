@@ -39,13 +39,27 @@ export async function POST(request: NextRequest) {
     const apiUrl = process.env.GODADDY_API_URL || 'https://api.godaddy.com'
 
     if (!apiKey || !apiSecret) {
+      const missing = []
+      if (!apiKey) missing.push('GODADDY_API_KEY')
+      if (!apiSecret) missing.push('GODADDY_API_SECRET')
+      
       console.error('GoDaddy API credentials not configured', {
         hasKey: !!apiKey,
         hasSecret: !!apiSecret,
-        apiUrl
+        apiUrl,
+        missingVars: missing,
+        allEnvVars: Object.keys(process.env).filter(k => k.includes('GODADDY'))
       })
+      
       return NextResponse.json(
-        { error: 'Domain search service not configured. Missing API credentials.' },
+        { 
+          error: `Domain search service not configured. Missing environment variables: ${missing.join(', ')}. Please check Vercel environment variables.`,
+          debug: process.env.NODE_ENV === 'development' ? {
+            hasKey: !!apiKey,
+            hasSecret: !!apiSecret,
+            missing
+          } : undefined
+        },
         { status: 500 }
       )
     }
