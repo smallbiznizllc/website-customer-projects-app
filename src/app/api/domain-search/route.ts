@@ -147,17 +147,28 @@ export async function POST(request: NextRequest) {
         }
       }
       
-      // For 400 errors, include more details
+      // For 400 errors, parse the error response more carefully
       if (response.status === 400) {
         try {
           const errorData = JSON.parse(responseText)
-          errorMessage = errorData.message || errorData.code || errorMessage
-          if (errorData.fields) {
-            errorMessage += ` Fields: ${JSON.stringify(errorData.fields)}`
+          if (errorData.message) {
+            errorMessage = errorData.message
+          } else if (errorData.code) {
+            errorMessage = `${errorData.code}: ${errorData.message || 'Bad Request'}`
+          }
+          if (errorData.fields && Array.isArray(errorData.fields)) {
+            const fieldErrors = errorData.fields.map((f: any) => 
+              `${f.path || 'unknown'}: ${f.message || f.code || 'error'}`
+            ).join(', ')
+            errorMessage += ` [${fieldErrors}]`
           }
         } catch {
           // Use the raw text if JSON parsing fails
-          errorMessage = `Bad Request: ${responseText.substring(0, 300)}`
+          if (responseText && responseText.trim()) {
+            errorMessage = `Bad Request: ${responseText.substring(0, 300)}`
+          } else {
+            errorMessage = 'Bad Request: Invalid request format'
+          }
         }
       }
       
@@ -166,12 +177,8 @@ export async function POST(request: NextRequest) {
         { 
           error: errorMessage,
           status: response.status,
-          details: responseText.substring(0, 500), // Show full error details
-          requestInfo: {
-            url: availabilityUrl,
-            method: 'POST',
-            domain: cleanDomain
-          }
+          details: responseText ? responseText.substring(0, 1000) : 'No response body',
+          rawResponse: responseText, // Include full response for debugging
         },
         { status: 500 }
       )
