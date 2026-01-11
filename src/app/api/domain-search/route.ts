@@ -99,7 +99,9 @@ export async function POST(request: NextRequest) {
       if (response.status === 401) {
         errorMessage = 'Invalid GoDaddy API credentials. Please verify your API key and secret in Vercel environment variables. Make sure there are no extra spaces or characters.'
       } else if (response.status === 403) {
-        errorMessage = 'GoDaddy API access forbidden. Your reseller account may need at least 50 domains or a Discount Domain Club membership to use the availability API.'
+        errorMessage = 'GoDaddy API access forbidden. Your account may need at least 50 domains for availability API access, or 10+ domains for other APIs. Premium Discount Domain Club members get full API access.'
+      } else if (response.status === 400 && responseText.includes('UNABLE_TO_AUTHENTICATE')) {
+        errorMessage = 'GoDaddy API authentication failed. This usually means: 1) Your account doesn\'t meet API access requirements (need 50+ domains for availability API), 2) API credentials are incorrect, or 3) Your reseller account needs API access enabled. Contact GoDaddy support to verify your API access.'
       } else if (response.status === 429) {
         errorMessage = 'Rate limit exceeded. Please try again in a moment.'
       } else if (response.status === 400) {
