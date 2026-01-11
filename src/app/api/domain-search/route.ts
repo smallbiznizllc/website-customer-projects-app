@@ -36,63 +36,82 @@ export async function POST(request: NextRequest) {
     // Get GoDaddy Reseller API credentials
     const apiKey = process.env.GODADDY_API_KEY
     const apiSecret = process.env.GODADDY_API_SECRET
-    const apiUrl = process.env.GODADDY_API_URL || 'https://api.ote-godaddy.com' // OTE (test) or https://api.godaddy.com (production)
+    const apiUrl = process.env.GODADDY_API_URL || 'https://api.godaddy.com'
 
     if (!apiKey || !apiSecret) {
-      console.error('GoDaddy API credentials not configured')
+      console.error('GoDaddy API credentials not configured', {
+        hasKey: !!apiKey,
+        hasSecret: !!apiSecret,
+        apiUrl
+      })
       return NextResponse.json(
-        { error: 'Domain search service not configured' },
+        { error: 'Domain search service not configured. Missing API credentials.' },
         { status: 500 }
       )
     }
 
+    console.log('GoDaddy API request:', {
+      url: `${apiUrl}/v1/domains/available`,
+      domain: cleanDomain,
+      hasCredentials: !!(apiKey && apiSecret)
+    })
+
     // Check domain availability via GoDaddy Reseller API
+    // Note: GoDaddy requires at least 50 domains in account OR Discount Domain Club membership for availability API
     const availabilityUrl = `${apiUrl}/v1/domains/available?domain=${encodeURIComponent(cleanDomain)}`
     
     const response = await fetch(availabilityUrl, {
       method: 'GET',
       headers: {
         'Authorization': `sso-key ${apiKey}:${apiSecret}`,
-        'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
     })
 
+    const responseText = await response.text()
+    console.log('GoDaddy API response:', {
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries()),
+      body: responseText.substring(0, 500) // First 500 chars for logging
+    })
+
     if (!response.ok) {
-      let errorText = ''
-      try {
-        errorText = await response.text()
-        console.error('GoDaddy API error:', response.status, errorText)
-      } catch (e) {
-        console.error('GoDaddy API error (could not read response):', response.status)
-      }
+      let errorMessage = 'Failed to check domain availability'
       
       if (response.status === 401) {
-        return NextResponse.json(
-          { error: 'Invalid GoDaddy API credentials. Please check your API key and secret.' },
-          { status: 500 }
-        )
-      }
-      
-      if (response.status === 403) {
-        return NextResponse.json(
-          { error: 'GoDaddy API access forbidden. Please check your reseller account permissions.' },
-          { status: 500 }
-        )
+        errorMessage = 'Invalid GoDaddy API credentials. Please verify your API key and secret in Vercel environment variables.'
+      } else if (response.status === 403) {
+        errorMessage = 'GoDaddy API access forbidden. Your reseller account may need at least 50 domains or a Discount Domain Club membership to use the availability API. Contact GoDaddy support for API access.'
+      } else if (response.status === 429) {
+        errorMessage = 'Rate limit exceeded. Please try again in a moment.'
+      } else {
+        try {
+          const errorData = JSON.parse(responseText)
+          errorMessage = errorData.message || errorMessage
+        } catch {
+          errorMessage = `API error (${response.status}): ${responseText.substring(0, 200)}`
+        }
       }
       
       return NextResponse.json(
-        { error: `Failed to check domain availability (${response.status}). Please try again.` },
+        { 
+          error: errorMessage,
+          status: response.status,
+          details: response.status !== 401 && response.status !== 403 ? responseText.substring(0, 200) : undefined
+        },
         { status: 500 }
       )
     }
 
     let data
     try {
-      data = await response.json()
+      data = JSON.parse(responseText)
+      console.log('Parsed GoDaddy API data:', data)
     } catch (e) {
-      console.error('Failed to parse GoDaddy API response:', e)
+      console.error('Failed to parse GoDaddy API response:', e, 'Response:', responseText)
       return NextResponse.json(
-        { error: 'Invalid response from domain service' },
+        { error: 'Invalid response from domain service. Please check GoDaddy API status.' },
         { status: 500 }
       )
     }
