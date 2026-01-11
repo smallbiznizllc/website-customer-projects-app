@@ -73,27 +73,60 @@ export async function POST(request: NextRequest) {
 
     // Check domain availability via GoDaddy Reseller API
     // Note: GoDaddy requires at least 50 domains in account OR Discount Domain Club membership for availability API
-    // The API requires a POST request with the domain in the request body
-    const availabilityUrl = `${apiUrl}/v1/domains/available`
-    
-    const response = await fetch(availabilityUrl, {
-      method: 'POST',
+    // Try both GET (with query) and POST (with body) - GoDaddy API format varies
+    let availabilityUrl = `${apiUrl}/v1/domains/available`
+    let requestOptions: RequestInit = {
+      method: 'GET',
       headers: {
         'Authorization': `sso-key ${apiKey}:${apiSecret}`,
-        'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      body: JSON.stringify({
-        domain: cleanDomain
-      }),
-    })
+    }
+    
+    // Try GET with query parameter first (most common format)
+    availabilityUrl = `${apiUrl}/v1/domains/available?domain=${encodeURIComponent(cleanDomain)}`
+    
+    let response = await fetch(availabilityUrl, requestOptions)
+    let responseText = await response.text()
+    
+    // If GET fails with 400, try POST with JSON body
+    if (response.status === 400) {
+      console.log('GET request failed, trying POST with JSON body...')
+      availabilityUrl = `${apiUrl}/v1/domains/available`
+      requestOptions = {
+        method: 'POST',
+        headers: {
+          'Authorization': `sso-key ${apiKey}:${apiSecret}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          domains: [cleanDomain] // Try array format
+        }),
+      }
+      
+      response = await fetch(availabilityUrl, requestOptions)
+      responseText = await response.text()
+      
+      // If that fails, try single domain object
+      if (response.status === 400) {
+        console.log('POST with array failed, trying single domain object...')
+        requestOptions.body = JSON.stringify({
+          domain: cleanDomain
+        })
+        
+        response = await fetch(availabilityUrl, requestOptions)
+        responseText = await response.text()
+      }
+    }
 
-    const responseText = await response.text()
     console.log('GoDaddy API response:', {
       status: response.status,
       statusText: response.statusText,
+      method: requestOptions.method,
+      url: availabilityUrl,
       headers: Object.fromEntries(response.headers.entries()),
-      body: responseText.substring(0, 500) // First 500 chars for logging
+      body: responseText.substring(0, 1000) // More detailed logging
     })
 
     if (!response.ok) {
@@ -128,11 +161,17 @@ export async function POST(request: NextRequest) {
         }
       }
       
+      // Always include details for debugging
       return NextResponse.json(
         { 
           error: errorMessage,
           status: response.status,
-          details: response.status !== 401 && response.status !== 403 ? responseText.substring(0, 300) : undefined
+          details: responseText.substring(0, 500), // Show full error details
+          requestInfo: {
+            url: availabilityUrl,
+            method: 'POST',
+            domain: cleanDomain
+          }
         },
         { status: 500 }
       )
