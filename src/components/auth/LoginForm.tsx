@@ -56,7 +56,7 @@ export default function LoginForm() {
     <div className="w-full max-w-md mx-auto">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Login</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Login</h2>
           <Link
             href="/"
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary transition-colors"
@@ -74,11 +74,11 @@ export default function LoginForm() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Email</label>
             <input
               type="email"
               {...register('email')}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="you@example.com"
             />
             {errors.email && (
@@ -87,11 +87,11 @@ export default function LoginForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Password</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Password</label>
             <input
               type="password"
               {...register('password')}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="••••••••"
             />
             {errors.password && (
