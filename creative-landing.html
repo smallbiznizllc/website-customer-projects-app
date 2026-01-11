@@ -902,7 +902,15 @@
                     }
 
                     if (!response.ok) {
-                        throw new Error(result.error || 'Failed to search domain');
+                        // Show detailed error message if available
+                        let errorMsg = result.error || 'Failed to search domain';
+                        if (result.details) {
+                            errorMsg += ` (Details: ${result.details})`;
+                        }
+                        if (result.status) {
+                            errorMsg += ` [Status: ${result.status}]`;
+                        }
+                        throw new Error(errorMsg);
                     }
 
                     // Display results
@@ -938,10 +946,25 @@
                     domainResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 } catch (error) {
                     console.error('Domain search error:', error);
-                    const errorMessage = error instanceof Error ? error.message : 'Failed to search domain. Please try again.';
+                    let errorMessage = error instanceof Error ? error.message : 'Failed to search domain. Please try again.';
+                    
+                    // Try to parse JSON error if it's a stringified object
+                    try {
+                        const errorObj = JSON.parse(errorMessage);
+                        errorMessage = errorObj.error || errorObj.message || errorMessage;
+                        if (errorObj.details) {
+                            errorMessage += `\n\nDetails: ${errorObj.details}`;
+                        }
+                    } catch {
+                        // Not JSON, use as-is
+                    }
+                    
                     domainResults.innerHTML = `
                         <div class="domain-result-card domain-result-unavailable">
-                            <p style="color: #991b1b;">${errorMessage}</p>
+                            <p style="color: #991b1b; white-space: pre-wrap;">${errorMessage}</p>
+                            <p style="color: #6b7280; font-size: 0.875rem; margin-top: 0.5rem;">
+                                Check the browser console (F12) or Vercel logs for more details.
+                            </p>
                         </div>
                     `;
                     domainResults.style.display = 'block';
