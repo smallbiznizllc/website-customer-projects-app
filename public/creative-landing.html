@@ -919,11 +919,11 @@
                         </div>
                         ${result.available && result.price ? `
                             <div class="domain-price">$${result.price.toFixed(2)}/${result.period || 1} year</div>
-                            <button class="domain-action-btn" onclick="window.open('https://www.godaddy.com/en-us/domainsearch/find?checkAvail=1&tmskey=&domainToCheck=${encodeURIComponent(result.domain || domainName)}', '_blank')">
+                            <button class="domain-action-btn" onclick="window.open('https://www.godaddy.com/en-us/domainsearch/find?checkAvail=1&tmskey=533362&domainToCheck=${encodeURIComponent(result.domain || domainName)}', '_blank')">
                                 Register Domain
                             </button>
                         ` : result.available ? `
-                            <button class="domain-action-btn" onclick="window.open('https://www.godaddy.com/en-us/domainsearch/find?checkAvail=1&tmskey=&domainToCheck=${encodeURIComponent(result.domain || domainName)}', '_blank')">
+                            <button class="domain-action-btn" onclick="window.open('https://www.godaddy.com/en-us/domainsearch/find?checkAvail=1&tmskey=533362&domainToCheck=${encodeURIComponent(result.domain || domainName)}', '_blank')">
                                 Check Pricing
                             </button>
                         ` : `
