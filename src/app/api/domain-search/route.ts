@@ -34,9 +34,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Get GoDaddy Reseller API credentials
-    const apiKey = process.env.GODADDY_API_KEY
-    const apiSecret = process.env.GODADDY_API_SECRET
-    const apiUrl = process.env.GODADDY_API_URL || 'https://api.godaddy.com'
+    // Trim whitespace to avoid authentication issues
+    const apiKey = process.env.GODADDY_API_KEY?.trim()
+    const apiSecret = process.env.GODADDY_API_SECRET?.trim()
+    const apiUrl = (process.env.GODADDY_API_URL || 'https://api.godaddy.com').trim()
 
     if (!apiKey || !apiSecret) {
       const missing = []
@@ -48,17 +49,11 @@ export async function POST(request: NextRequest) {
         hasSecret: !!apiSecret,
         apiUrl,
         missingVars: missing,
-        allEnvVars: Object.keys(process.env).filter(k => k.includes('GODADDY'))
       })
       
       return NextResponse.json(
         { 
           error: `Domain search service not configured. Missing environment variables: ${missing.join(', ')}. Please check Vercel environment variables.`,
-          debug: process.env.NODE_ENV === 'development' ? {
-            hasKey: !!apiKey,
-            hasSecret: !!apiSecret,
-            missing
-          } : undefined
         },
         { status: 500 }
       )
@@ -67,77 +62,63 @@ export async function POST(request: NextRequest) {
     console.log('GoDaddy API request:', {
       url: `${apiUrl}/v1/domains/available`,
       domain: cleanDomain,
-      method: 'POST',
-      hasCredentials: !!(apiKey && apiSecret)
+      method: 'GET',
+      hasCredentials: !!(apiKey && apiSecret),
+      keyLength: apiKey.length,
+      secretLength: apiSecret.length
     })
 
-    // Check domain availability via GoDaddy Reseller API
-    // Note: GoDaddy requires at least 50 domains in account OR Discount Domain Club membership for availability API
-    // Try both GET (with query) and POST (with body) - GoDaddy API format varies
-    let availabilityUrl = `${apiUrl}/v1/domains/available`
-    let requestOptions: RequestInit = {
+    // GoDaddy API uses GET with query parameter for single domain
+    // Try GET first (this is the standard format)
+    const availabilityUrl = `${apiUrl}/v1/domains/available?domain=${encodeURIComponent(cleanDomain)}`
+    
+    // Build authorization header - ensure no extra spaces
+    const authHeader = `sso-key ${apiKey}:${apiSecret}`
+    
+    let response = await fetch(availabilityUrl, {
       method: 'GET',
       headers: {
-        'Authorization': `sso-key ${apiKey}:${apiSecret}`,
+        'Authorization': authHeader,
         'Accept': 'application/json',
       },
-    }
-    
-    // Try GET with query parameter first (most common format)
-    availabilityUrl = `${apiUrl}/v1/domains/available?domain=${encodeURIComponent(cleanDomain)}`
-    
-    let response = await fetch(availabilityUrl, requestOptions)
+    })
+
     let responseText = await response.text()
     
-    // If GET fails with 400, try POST with JSON body
-    if (response.status === 400) {
-      console.log('GET request failed, trying POST with JSON body...')
-      availabilityUrl = `${apiUrl}/v1/domains/available`
-      requestOptions = {
-        method: 'POST',
-        headers: {
-          'Authorization': `sso-key ${apiKey}:${apiSecret}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          domains: [cleanDomain] // Try array format
-        }),
-      }
-      
-      response = await fetch(availabilityUrl, requestOptions)
-      responseText = await response.text()
-      
-      // If that fails, try single domain object
-      if (response.status === 400) {
-        console.log('POST with array failed, trying single domain object...')
-        requestOptions.body = JSON.stringify({
-          domain: cleanDomain
-        })
-        
-        response = await fetch(availabilityUrl, requestOptions)
-        responseText = await response.text()
-      }
-    }
-
     console.log('GoDaddy API response:', {
       status: response.status,
       statusText: response.statusText,
-      method: requestOptions.method,
-      url: availabilityUrl,
-      headers: Object.fromEntries(response.headers.entries()),
-      body: responseText.substring(0, 1000) // More detailed logging
+      method: 'GET',
+      body: responseText.substring(0, 500)
     })
 
+    // If GET fails with 400/401, the API might need POST or credentials are wrong
     if (!response.ok) {
       let errorMessage = 'Failed to check domain availability'
       
       if (response.status === 401) {
-        errorMessage = 'Invalid GoDaddy API credentials. Please verify your API key and secret in Vercel environment variables.'
+        errorMessage = 'Invalid GoDaddy API credentials. Please verify your API key and secret in Vercel environment variables. Make sure there are no extra spaces or characters.'
       } else if (response.status === 403) {
-        errorMessage = 'GoDaddy API access forbidden. Your reseller account may need at least 50 domains or a Discount Domain Club membership to use the availability API. Contact GoDaddy support for API access.'
+        errorMessage = 'GoDaddy API access forbidden. Your reseller account may need at least 50 domains or a Discount Domain Club membership to use the availability API.'
       } else if (response.status === 429) {
         errorMessage = 'Rate limit exceeded. Please try again in a moment.'
+      } else if (response.status === 400) {
+        try {
+          const errorData = JSON.parse(responseText)
+          if (errorData.code === 'UNABLE_TO_AUTHENTICATE') {
+            errorMessage = 'Authentication failed. Please check your GoDaddy API key and secret. Ensure they are correct and have no extra spaces. The error suggests the credentials cannot be authenticated.'
+          } else {
+            errorMessage = errorData.message || errorData.code || 'Bad Request'
+            if (errorData.fields) {
+              const fieldErrors = errorData.fields.map((f: any) => 
+                `${f.path || 'unknown'}: ${f.message || f.code || 'error'}`
+              ).join(', ')
+              errorMessage += ` [${fieldErrors}]`
+            }
+          }
+        } catch {
+          errorMessage = `Bad Request: ${responseText.substring(0, 300)}`
+        }
       } else {
         try {
           const errorData = JSON.parse(responseText)
@@ -147,38 +128,11 @@ export async function POST(request: NextRequest) {
         }
       }
       
-      // For 400 errors, parse the error response more carefully
-      if (response.status === 400) {
-        try {
-          const errorData = JSON.parse(responseText)
-          if (errorData.message) {
-            errorMessage = errorData.message
-          } else if (errorData.code) {
-            errorMessage = `${errorData.code}: ${errorData.message || 'Bad Request'}`
-          }
-          if (errorData.fields && Array.isArray(errorData.fields)) {
-            const fieldErrors = errorData.fields.map((f: any) => 
-              `${f.path || 'unknown'}: ${f.message || f.code || 'error'}`
-            ).join(', ')
-            errorMessage += ` [${fieldErrors}]`
-          }
-        } catch {
-          // Use the raw text if JSON parsing fails
-          if (responseText && responseText.trim()) {
-            errorMessage = `Bad Request: ${responseText.substring(0, 300)}`
-          } else {
-            errorMessage = 'Bad Request: Invalid request format'
-          }
-        }
-      }
-      
-      // Always include details for debugging
       return NextResponse.json(
         { 
           error: errorMessage,
           status: response.status,
-          details: responseText ? responseText.substring(0, 1000) : 'No response body',
-          rawResponse: responseText, // Include full response for debugging
+          details: responseText ? responseText.substring(0, 500) : 'No response body',
         },
         { status: 500 }
       )
@@ -197,14 +151,13 @@ export async function POST(request: NextRequest) {
     }
     
     // Handle GoDaddy API response format
-    // The API may return the domain data directly or in an array
     const domainData = Array.isArray(data) && data.length > 0 ? data[0] : data
     
     // Format response
     const result: DomainAvailabilityResponse = {
       domain: cleanDomain,
       available: domainData.available === true,
-      price: domainData.price ? domainData.price / 1000000 : undefined, // GoDaddy returns price in micro-units (divide by 1,000,000)
+      price: domainData.price ? domainData.price / 1000000 : undefined, // GoDaddy returns price in micro-units
       currency: domainData.currency || 'USD',
       period: domainData.period || 1,
     }
@@ -218,4 +171,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-
